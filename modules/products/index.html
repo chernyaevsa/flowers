@@ -7,6 +7,7 @@
     <title>Ромашки</title>
     <link rel="stylesheet" href="/css/bootstrap.min.css">
     <script src="/js/bootstrap.min.js"></script>
+    <script src="/modules/products/js/products.js"></script>
 </head>
 
 <body style="height: 100vh;">
@@ -19,10 +20,10 @@
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="/">Главная</a>
+                        <a class="nav-link" href="/">Главная</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/modules/products/">Товары</a>
+                        <a class="nav-link active" aria-current="page" href="#">Товары</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link disabled">Профиль</a>
@@ -36,12 +37,9 @@
         </div>
     </nav>
     <div class="container mt-2" style="min-height: 100%;">
-        <div class="d-flex justify-content-center">
-            <div class="d-flex flex-column" style="max-width: 400px;">
-                <img class="img-fluid" src="/assets/icon.png">
-                <h2 class="text-center">Магазин "Ромашки"</h2>
-                <p class="text-center">Цветы — радость жизни, яркие краски в каждом доме</p>
-                <a class="btn btn-warning">Каталог</a>
+        <div>
+            <div class="row justify-content-center ms-1 me-1" id="products">
+                <!--Здесь будут товары-->
             </div>
         </div>
     </div>
