@@ -7,7 +7,6 @@
     <title>Ромашки</title>
     <link rel="stylesheet" href="/css/bootstrap.min.css">
     <script src="/js/bootstrap.min.js"></script>
-    <script src="/modules/admin/products/js/products.js"></script>
 </head>
 
 <body style="height: 100vh;">
@@ -38,7 +37,7 @@
     </nav>
     <div class="container mt-2" style="min-height: 100%;">
         <div>
-            <form action="http://localhost:8000/api/product" method="POST">
+            <form id="product_form">
                 <div class="form-group">
                   <label for="name">Название</label>
                   <input name="name" type="text" class="form-control" id="name" placeholder="Ромашки">
@@ -55,8 +54,9 @@
                     <label for="price">Цена</label>
                     <input name="price" type="number" class="form-control" id="price" placeholder="1000000">
                 </div>
-                <input type="submit" class="btn btn-success mt-2">
+                
               </form>
+              <button id="_button" class="btn btn-success mt-2">Редактировать</button>
         </div>
     </div>
     <footer class="footer bg-body-tertiary">
@@ -70,5 +70,5 @@
         </div>
     </footer>
 </body>
-
+<script src="/modules/admin/products/js/product_form.js"></script>
 </html>

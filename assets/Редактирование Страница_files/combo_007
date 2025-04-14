@@ -1,0 +1,159 @@
+YUI.add('moodle-local_favorites-favorites', function(Y,NAME) {
+ 
+	var FAVORITESNAME = 'Favorites';
+	    
+	var FAVORITES = function() {
+    	FAVORITES.superclass.constructor.apply(this, arguments);
+    };
+    
+    Y.extend(FAVORITES, Y.Base, {
+        initializer : function(config) { 
+			if(Y.one('#region-main .disable-favorites')){
+				return;
+			}
+        	//получаем позицию, куда вставить значок
+        	this.mainnode = Y.one('#region-main .card-block');
+            
+        	if (!this.mainnode) {
+                this.mainnode = Y.one('#region-main'); 
+            }
+            
+        	this.icon_classes = 'star';
+        	this.icon_move    = 'add_favorite';
+        	this.icon_title   = 'добавить в избранное';
+
+        	//если есть уже ссылка у пользователя, кнопка удаляет из избранного
+        	this.user_id       = config.user_id;
+        	this.dirroot       = config.dirroot;
+        	this.wwwroot       = config.wwwroot;        
+        	this.favorite_list = JSON.parse(config.favorite_list); 
+        	this.favorite_url = 0;
+        	
+        	var loc = document.location.href;
+        	//проверяем, есть ли страничка в избранном
+        	for(i in this.favorite_list) {
+        		if(loc == this.favorite_list[i].f_url) {
+        			this.favorite_url = 1;
+        			delete this.favorite_list[i];
+        		}
+        	}
+        	
+        	
+            if (this.favorite_url == '1') {
+                 this.icon_classes = 'star-no';
+                 this.icon_move    = 'del_favorite';
+                 this.icon_title   = 'удалить из избранного';
+            }
+            
+            if(config.title == '') {
+            	config.title = document.title;
+            }
+            
+            this.title = config.title;
+            
+            this.favorites = this.createFavoritesMenu();
+            this.mainnode.prepend(this.favorites);
+             
+           	//добавление\удаление ссылки на страницу 
+        	Y.one('#f_move').on('click', function(){ this.ToggleFavoritesIcon(); },this);
+        	        
+        },
+                
+        /**
+         * Create menu with favorites list
+         * 
+         * @return {Object}
+         * */
+        createFavoritesMenu: function() {
+        	var html = '<nav>'+
+        					'<ul id="favorite">'+
+        						'<li><div id="favorite_pix" class="'+this.icon_classes+'"></div>'+
+        							'<ul class="favorite_menu">'+
+        								'<li><a id="f_move" class="'+this.icon_move+'">'+this.icon_title+'</a></li>';
+        	
+        	var i;
+        	for(i in this.favorite_list) {
+        		html += '<li id="f_f_'+this.favorite_list[i].id+'"><a href="'+this.favorite_list[i].f_url+'">'+this.favorite_list[i].f_title+'</a></li>';
+        	}
+        	
+        	html +=						'</ul>'+
+        						'</li>'+
+        					'</ul>'+
+        				'</nav>';
+        	
+        	return Y.Node.create(html);
+        },
+        /**
+         * Add action from add/delete favorites
+         * 
+         * @return
+         * */
+        
+        ToggleFavoritesIcon: function() {
+        
+        	var request = new XMLHttpRequest();
+        	       	
+        	var url = this.wwwroot+'/local/favorites/favorites.php?user_id='+this.user_id+'&dir='+this.dirroot+'&url='+encodeURIComponent(document.location.href);
+        	
+        	if (this.favorite_url == 0) {
+        		//add to favorites        	
+        		url += '&move=add&title='+this.title;
+        		
+        		request.open("GET",url,true);
+        		request.send();
+        		
+        		this.favorite_url = 1;
+        		request.onreadystatechange = function(){
+        			if (request.readyState === 4 && request.status === 200) { 
+        				
+        				document.getElementById('favorite_pix').className = 'star-no';
+        				document.getElementById('f_move').className = 'del_favorite';
+        				document.getElementById('f_move').text('удалить из избранного');
+        			}
+        		}
+        		
+        		             
+            } else {
+            	//remove into favorites
+            	url += '&move=delete';
+            	
+            	request.open("GET",url,true);
+            	request.send();
+        		
+            	this.favorite_url = 0;
+        		request.onreadystatechange = function(){
+        			if (request.readyState === 4 && request.status === 200) { 
+        				
+        				document.getElementById('favorite_pix').className = 'star';
+        				document.getElementById('f_move').className = 'add_favorite';
+        				document.getElementById('f_move').text('добавить в избранное');
+        			}
+        		}                 
+            }
+        },       
+	    
+    }, {
+    	NAME : FAVORITESNAME, //module name is something mandatory. 
+                                // It should be in lower case without space 
+                                // as YUI use it for name space sometimes.
+    	ATTRS : {
+                 favorite_url : '0',
+                 user_id: '0',
+                 dirroot: '',
+                 wwwroot: '',
+                 title: '',
+                 favorite_list: {}
+    	} // Attributes are the parameters sent when the $PAGE->requires->yui_module calls the module. 
+          // Here you can declare default values or run functions on the parameter. 
+          // The param names must be the same as the ones declared 
+          // in the $PAGE->requires->yui_module call.
+    });
+    
+    M.local_favorites = M.local_favorites || {}; // This line use existing name path if it exists, otherwise create a new one. 
+                                                // This is to avoid to overwrite previously loaded module with same name.
+    M.local_favorites.init_favorites = function(config) { // 'config' contains the parameter values        
+    	return new FAVORITES(config); // 'config' contains the parameter values
+    };
+}, '@VERSION@', {
+      requires:['base','event', 'node']
+});
